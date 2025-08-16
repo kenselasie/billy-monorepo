@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(nanoid()) @db.VarChar(255)
+  email       String     @unique @db.VarChar(255)
+  password    String     @db.VarChar(255)
+  first_name  String     @db.VarChar(255)
+  last_name   String     @db.VarChar(255)
+  other_names String?    @db.VarChar(255)
+  is_active   Boolean    @default(false)
+  roles       UserRole[]
+  profile_id  String?    @db.VarChar(255)
+  profile     Profile?   @relation(fields: [profile_id], references: [id])
+  stores      Store[]
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+}
+
+model UserRole {
+  id          String   @id @default(nanoid()) @db.VarChar(21)
+  name        String   @unique
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  users       User[]
+}
+
+model Profile {
+  id              String   @id @default(nanoid()) @db.VarChar(255)
+  bio             String?  @db.Text
+  socials         Json?
+  contact         String?  @db.VarChar(255)
+  profile_picture String?  @db.VarChar(500) // URL to profile picture
+  address         Address? @relation(fields: [addressId], references: [id])
+  addressId       String?  @db.VarChar(255)
+  users           User[]
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
+model Address {
+  id          String    @id @default(nanoid()) @db.VarChar(255)
+  street      String    @db.VarChar(255)
+  city        String    @db.VarChar(255)
+  state       String    @db.VarChar(255)
+  country     String    @db.VarChar(255)
+  postal_code String    @db.VarChar(20)
+  latitude    String?   @db.VarChar(20)
+  longitude   String?   @db.VarChar(20)
+  store       Store[]
+  profile     Profile[]
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+}
+
+model Store {
+  id            String     @id @default(nanoid()) @db.VarChar(255)
+  name          String     @db.VarChar(255)
+  ownerId       String     @db.VarChar(255)
+  slug          String     @unique @db.VarChar(255)
+  is_active     Boolean    @default(false)
+  orders_count  Int        @default(0)
+  product_count Int        @default(0)
+  description   String?
+  logo          String?    @db.VarChar(500) // URL to store logo
+  cover_image   String?    @db.VarChar(500) // URL to store cover image
+  images        String[]   // Array of store image URLs
+  address       Address?   @relation(fields: [addressId], references: [id])
+  addressId     String?    @db.VarChar(255)
+  owner         User         @relation(fields: [ownerId], references: [id])
+  products      Products[]   @relation("StoreProducts")
+  categories    Category[]   @relation("StoreCategories")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+
+model Category {
+  id             String             @id @default(nanoid()) @db.VarChar(255)
+  name           String             @db.VarChar(255)
+  slug           String             @db.VarChar(255)
+  details        String?            @db.VarChar(255)
+  icon           String?            @db.VarChar(255)
+  image          String?            @db.VarChar(500) // URL to category image
+  products_count Int                @default(0)
+  products       ProductCategory[]  @relation("CategoryProducts")
+  // Store relation
+  storeId        String             @db.VarChar(255)
+  store          Store              @relation("StoreCategories", fields: [storeId], references: [id], onDelete: Cascade)
+  // Self-referencing relation
+  parent_id      String?            @db.VarChar(255)
+  parent         Category?          @relation("CategoryToChildren", fields: [parent_id], references: [id])
+  children       Category[]         @relation("CategoryToChildren")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([slug, storeId])
+}
+
+model Products {
+  id          String    @id @default(nanoid()) @db.VarChar(255)
+  name        String    @db.VarChar(255)
+  slug        String    @unique @db.VarChar(255)
+  description String?   @db.Text
+  
+  // Pricing - using Decimal for proper currency handling
+  price       Decimal   @db.Decimal(10, 2)
+  sale_price  Decimal?  @db.Decimal(10, 2)
+  
+  // Inventory
+  sku         String    @unique @db.VarChar(100)
+  quantity    Int       @default(0)
+  in_stock    Boolean   @default(true)
+  
+  // Status management
+  status      ProductStatus @default(DRAFT) // DRAFT, PUBLISHED, ARCHIVED
+  
+  // Physical dimensions (in cm)
+  height      Float?
+  width       Float?
+  length      Float?
+  weight      Float?    // in grams
+  
+  // Multi-tenant: Products belong to stores
+  storeId     String    @db.VarChar(255)
+  store       Store     @relation("StoreProducts", fields: [storeId], references: [id], onDelete: Cascade)
+  
+  // Relationships
+  images      String[]          // Array of product image URLs
+  categories  ProductCategory[] @relation("ProductCategories")
+  attributes  ProductAttribute[] @relation("ProductAttributes")
+  
+  // SEO and metadata
+  meta_title       String? @db.VarChar(255)
+  meta_description String? @db.VarChar(500)
+  tags             String[] // Array of tags
+  
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  // Indexes for performance
+  @@index([storeId])
+  @@index([status])
+  @@index([sku])
+}
+
+model Attributes {
+  id          String            @id @default(nanoid()) @db.VarChar(255)
+  name        String            @db.VarChar(255)
+  slug        String            @unique @db.VarChar(255)
+  description String?
+  values      AttributeValues[] @relation("AttributeValues")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model AttributeValues {
+  id            String      @id @default(nanoid()) @db.VarChar(255)
+  value         String // XL, Blue, XXL etc
+  meta          String? // #ce1f6a,
+  attributes_id String?     @db.VarChar(255)
+  attributes    Attributes? @relation("AttributeValues", fields: [attributes_id], references: [id])
+  products      ProductAttribute[] @relation("AttributeValueProducts")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+// Junction table for Products and Categories (many-to-many)
+model ProductCategory {
+  id         String   @id @default(nanoid()) @db.VarChar(255)
+  productId  String   @db.VarChar(255)
+  categoryId String   @db.VarChar(255)
+  product    Products @relation("ProductCategories", fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation("CategoryProducts", fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  created_at DateTime @default(now())
+  
+  @@unique([productId, categoryId])
+  @@index([productId])
+  @@index([categoryId])
+}
+
+// Junction table for Products and Attributes with Values (many-to-many)
+model ProductAttribute {
+  id               String          @id @default(nanoid()) @db.VarChar(255)
+  productId        String          @db.VarChar(255)
+  attributeValueId String          @db.VarChar(255)
+  product          Products        @relation("ProductAttributes", fields: [productId], references: [id], onDelete: Cascade)
+  attributeValue   AttributeValues @relation("AttributeValueProducts", fields: [attributeValueId], references: [id], onDelete: Cascade)
+  
+  created_at DateTime @default(now())
+  
+  @@unique([productId, attributeValueId])
+  @@index([productId])
+  @@index([attributeValueId])
+}
+
+// Enums
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  OUT_OF_STOCK
+}
