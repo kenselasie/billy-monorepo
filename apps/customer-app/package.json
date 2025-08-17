@@ -1,0 +1,14 @@
+{
+  "name": "customer-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "lint": "next lint",
+    "test": "jest --passWithNoTests",
+    "test:ci": "jest --ci --coverage --coverageReporters=text"
+  }
+}
