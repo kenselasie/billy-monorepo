@@ -3,10 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
 
-import {
-  CreateUserDto,
-  LoginDto,
-} from './dto/register-users.dto';
+import { CreateUserDto, LoginDto } from './dto/register-users.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -14,12 +11,13 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'User login',
-    description: 'Authenticate user with email and password, returns JWT token for authorization'
+    description:
+      'Authenticate user with email and password, returns JWT token for authorization',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Login successful',
     schema: {
       type: 'object',
@@ -36,14 +34,14 @@ export class AuthController {
                 email: { type: 'string' },
                 first_name: { type: 'string' },
                 last_name: { type: 'string' },
-                is_active: { type: 'boolean' }
-              }
+                is_active: { type: 'boolean' },
+              },
             },
-            accessToken: { type: 'string', description: 'JWT access token' }
-          }
-        }
-      }
-    }
+            accessToken: { type: 'string', description: 'JWT access token' },
+          },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Invalid credentials' })
   @ApiResponse({ status: 401, description: 'Authentication failed' })
@@ -62,12 +60,13 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'User registration',
-    description: 'Register a new user account. Returns user information and JWT token upon successful registration'
+    description:
+      'Register a new user account. Returns user information and JWT token upon successful registration',
   })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Registration successful',
     schema: {
       type: 'object',
@@ -84,16 +83,19 @@ export class AuthController {
                 email: { type: 'string' },
                 first_name: { type: 'string' },
                 last_name: { type: 'string' },
-                is_active: { type: 'boolean' }
-              }
+                is_active: { type: 'boolean' },
+              },
             },
-            accessToken: { type: 'string', description: 'JWT access token' }
-          }
-        }
-      }
-    }
+            accessToken: { type: 'string', description: 'JWT access token' },
+          },
+        },
+      },
+    },
   })
-  @ApiResponse({ status: 400, description: 'Bad request - validation error or user already exists' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - validation error or user already exists',
+  })
   @ApiResponse({ status: 409, description: 'Conflict - email already in use' })
   async register(
     @Body()

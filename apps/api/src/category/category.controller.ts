@@ -71,12 +71,17 @@ export class CategoryController {
   @Get('store/:storeSlug')
   @ApiOperation({
     summary: 'Get categories by store slug (public endpoint for frontend)',
-    description: 'Retrieve all categories belonging to a specific store using the store slug.',
+    description:
+      'Retrieve all categories belonging to a specific store using the store slug.',
   })
-  @ApiResponse({ status: 200, description: 'Categories retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Categories retrieved successfully',
+  })
   @ApiResponse({ status: 404, description: 'Store not found' })
   async getCategoriesByStoreSlug(@Param('storeSlug') storeSlug: string) {
-    const [data] = await this.categoryService.getCategoriesByStoreSlug(storeSlug);
+    const [data] =
+      await this.categoryService.getCategoriesByStoreSlug(storeSlug);
     return data;
   }
 

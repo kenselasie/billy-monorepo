@@ -34,15 +34,17 @@ export class CategoryService {
 
     // Check if category slug already exists for this store
     const categoryExists = await this.prisma.category.findUnique({
-      where: { 
+      where: {
         slug_storeId: {
           slug: createCategoryDto.slug,
           storeId: createCategoryDto.storeId,
-        }
+        },
       },
     });
     if (categoryExists)
-      throw new BadRequestException('Category slug already exists for this store');
+      throw new BadRequestException(
+        'Category slug already exists for this store',
+      );
 
     return this.prisma.category.create({
       data: createCategoryDto,
@@ -95,7 +97,9 @@ export class CategoryService {
         },
       });
       if (categoryExists)
-        throw new BadRequestException('Category slug already exists for this store');
+        throw new BadRequestException(
+          'Category slug already exists for this store',
+        );
     }
 
     return this.prisma.category.update({
@@ -137,8 +141,8 @@ export class CategoryService {
         },
         orderBy: { created_at: 'desc' },
       }),
-      this.prisma.category.count({ 
-        where: { storeId: store.id } 
+      this.prisma.category.count({
+        where: { storeId: store.id },
       }),
     ]);
 

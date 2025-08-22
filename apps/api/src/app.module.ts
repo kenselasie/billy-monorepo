@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { StoreModule } from './store/store.module';
 import { CategoryModule } from './category/category.module';
 import { ProductsModule } from './products/products.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProductsModule } from './products/products.module';
     StoreModule,
     CategoryModule,
     ProductsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

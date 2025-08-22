@@ -114,7 +114,9 @@ export class ProductsController {
   }
 
   @Get('store/slug/:storeSlug')
-  @ApiOperation({ summary: 'Get products by store slug (public endpoint for frontend)' })
+  @ApiOperation({
+    summary: 'Get products by store slug (public endpoint for frontend)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Store products retrieved successfully',
@@ -128,7 +130,9 @@ export class ProductsController {
   }
 
   @Get('slug/:slug')
-  @ApiOperation({ summary: 'Get product by slug (public endpoint for frontend)' })
+  @ApiOperation({
+    summary: 'Get product by slug (public endpoint for frontend)',
+  })
   @ApiResponse({ status: 200, description: 'Product retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   async findBySlug(@Param('slug') slug: string) {
