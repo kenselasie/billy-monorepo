@@ -17,5 +17,8 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:seed": "ts-node prisma/seed.ts"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21"
   }
 }
