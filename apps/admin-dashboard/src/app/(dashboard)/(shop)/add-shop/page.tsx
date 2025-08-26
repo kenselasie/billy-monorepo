@@ -54,7 +54,8 @@ export default function AddShopPage() {
   });
 
   const { mutate: addStore, isPending } = useAddStoreMutation();
-  const { mutate: uploadImage } = useImageUploadMutation();
+  const { mutate: uploadImage, isPending: pendingUploadImage } =
+    useImageUploadMutation();
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -353,11 +354,13 @@ export default function AddShopPage() {
             <div className="flex justify-end pt-6">
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || pendingUploadImage}
                 size="lg"
                 className="min-w-32"
               >
-                {isPending ? "Processing..." : "Create Shop"}
+                {isPending || pendingUploadImage
+                  ? "Processing..."
+                  : "Create Shop"}
               </Button>
             </div>
           </form>

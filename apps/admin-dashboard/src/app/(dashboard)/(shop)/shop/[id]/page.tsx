@@ -67,15 +67,17 @@ const ShopView = () => {
       />
       {/* Cover Image */}
       <div className="relative h-[200px] md:h-[300px] w-full">
-        {store?.attachment?.[0] ? (
+        {store?.cover_image ? (
           <Image
-            src={store.attachment[0]}
-            alt={store.name || "Store"}
+            src={store.cover_image}
+            alt={store.name || "Store Cover"}
             fill
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gray-100" />
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+            <p className="text-gray-500">No cover image</p>
+          </div>
         )}
       </div>
 
@@ -85,11 +87,23 @@ const ShopView = () => {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Logo and Basic Info */}
             <div className="flex items-start space-x-4">
-              <Avatar className="w-24 h-24 border-4 border-white">
-                <AvatarFallback className="text-2xl">
-                  {store?.name?.[0]}
-                </AvatarFallback>
-              </Avatar>
+              <div className="w-24 h-24 border-4 border-white rounded-full overflow-hidden bg-white">
+                {store?.logo ? (
+                  <Image
+                    src={store.logo}
+                    alt={`${store.name} logo`}
+                    width={96}
+                    height={96}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <Avatar className="w-full h-full">
+                    <AvatarFallback className="text-2xl">
+                      {store?.name?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+              </div>
               <div>
                 <div className="flex items-center space-x-2">
                   <h1 className="text-2xl font-bold">{store?.name}</h1>
@@ -151,6 +165,14 @@ const ShopView = () => {
           <CardContent className="p-6">
             <h2 className="text-lg font-semibold mb-4">Store Details</h2>
             <div className="space-y-2">
+              <p>
+                <span className="text-gray-500">Slug:</span>{" "}
+                {store?.slug || "N/A"}
+              </p>
+              <p>
+                <span className="text-gray-500">Store ID:</span>{" "}
+                {store?.id || "N/A"}
+              </p>
               <p>
                 <span className="text-gray-500">Created:</span>{" "}
                 {new Date(store?.created_at || "").toLocaleDateString()}
