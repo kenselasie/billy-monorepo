@@ -1,5 +1,5 @@
 import { UploadMediaType } from "@/data/use-upload";
-import http from "./base";
+import http from "@/data/base";
 import { API_ENDPOINTS } from "./endpoints";
 
 export const uploadAudioMedia = async (payload: UploadMediaType) => {
@@ -14,9 +14,26 @@ export const uploadAudioMedia = async (payload: UploadMediaType) => {
     const { data } = await http.post(
       API_ENDPOINTS.UPLOAD_AUDIO,
       formData,
-      options,
+      options
     );
     return await Promise.resolve(data);
+  } catch (error) {
+    console.log(error);
+    return await Promise.reject(error);
+  }
+};
+
+export const uploadImage = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const { data } = await http.post(API_ENDPOINTS.UPLOAD_IMAGE, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
   } catch (error) {
     console.log(error);
     return await Promise.reject(error);

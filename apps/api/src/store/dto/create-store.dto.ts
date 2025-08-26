@@ -1,5 +1,39 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional, IsArray } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class AddressDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  state?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  zip?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  streetAddress?: string;
+}
 
 export class CreateStoreDto {
   @ApiProperty()
@@ -37,7 +71,21 @@ export class CreateStoreDto {
   @IsString({ each: true })
   images?: string[];
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false,
+    description: 'Store address information',
+    type: AddressDto,
+  })
   @IsOptional()
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address?: AddressDto;
+
+  @ApiProperty({
+    required: false,
+    description: 'Address ID if address already exists',
+  })
+  @IsOptional()
+  @IsString()
   addressId?: string;
 }
